@@ -40,13 +40,17 @@ class ProductProduct(models.Model):
             raise UserError(_('The inventory valuation of some products %s is automated. You can only update their cost from the product form.') % (real_time_products.mapped('display_name')))
 
         boms_to_recompute = self.env['mrp.bom'].search(['|', ('product_id', 'in', self.ids), '&', ('product_id', '=', False), ('product_tmpl_id', 'in', self.mapped('product_tmpl_id').ids)])
+        if not boms_to_recompute:
+            msg = _('No Bill of Material found for selected product(s).')
+            raise UserError(msg)
         for product in self:
             product.standard_price = product._get_price_from_bom(boms_to_recompute)
 
     def _get_price_from_bom(self, boms_to_recompute=False):
         self.ensure_one()
         bom = self.env['mrp.bom']._bom_find(product=self)
-        return self._compute_bom_price(bom, boms_to_recompute=boms_to_recompute)
+        if bom:
+            return self._compute_bom_price(bom, boms_to_recompute=boms_to_recompute)
 
     def _compute_bom_price(self, bom, boms_to_recompute=False):
         self.ensure_one()
