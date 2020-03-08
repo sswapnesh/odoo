@@ -21,9 +21,9 @@
                 <sheet>
                     <group>
                         <group>
-                            <field name="country_id" invisible="1"/>
                             <field name="sequence" invisible="1"/>
                             <field name="name"/>
+                            <field name="country_id"/>
                             <field name="tag_name"/>
                         </group>
                         <group>
