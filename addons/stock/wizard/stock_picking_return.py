@@ -107,6 +107,17 @@ class ReturnPicking(models.TransientModel):
         }
         return vals
 
+    def _prepare_picking_default_values(self):
+        vals = {
+            'move_lines': [],
+            'picking_type_id': self.picking_id.picking_type_id.return_picking_type_id.id or self.picking_id.picking_type_id.id,
+            'state': 'draft',
+            'origin': _("Return of %s") % self.picking_id.name,
+            'location_id': self.picking_id.location_dest_id.id,
+            'location_dest_id': self.location_id.id
+        }
+        return vals
+
     def _create_returns(self):
         # TODO sle: the unreserve of the next moves could be less brutal
         for return_move in self.product_return_moves.mapped('move_id'):
@@ -114,13 +125,7 @@ class ReturnPicking(models.TransientModel):
 
         # create new picking for returned products
         picking_type_id = self.picking_id.picking_type_id.return_picking_type_id.id or self.picking_id.picking_type_id.id
-        new_picking = self.picking_id.copy({
-            'move_lines': [],
-            'picking_type_id': picking_type_id,
-            'state': 'draft',
-            'origin': _("Return of %s") % self.picking_id.name,
-            'location_id': self.picking_id.location_dest_id.id,
-            'location_dest_id': self.location_id.id})
+        new_picking = self.picking_id.copy(self._prepare_picking_default_values())
         new_picking.message_post_with_view('mail.message_origin_link',
             values={'self': new_picking, 'origin': self.picking_id},
             subtype_id=self.env.ref('mail.mt_note').id)
