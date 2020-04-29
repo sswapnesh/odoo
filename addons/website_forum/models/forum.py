@@ -229,7 +229,7 @@ class Post(models.Model):
     # history
     create_date = fields.Datetime('Asked on', index=True, readonly=True)
     create_uid = fields.Many2one('res.users', string='Created by', index=True, readonly=True)
-    write_date = fields.Datetime('Update on', index=True, readonly=True)
+    write_date = fields.Datetime('Updated on', index=True, readonly=True)
     bump_date = fields.Datetime('Bumped on', readonly=True,
                                 help="Technical field allowing to bump a question. Writing on this field will trigger "
                                      "a write on write_date and therefore bump the post. Directly writing on write_date "
