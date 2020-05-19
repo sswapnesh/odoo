@@ -102,7 +102,7 @@ class account_payment(models.Model):
 
         # Check all invoices are open
         if not invoices or any(invoice.state != 'posted' for invoice in invoices):
-            raise UserError(_("You can only register payments for open invoices"))
+            raise UserError(_("You can only register payments for posted moves."))
         # Check if, in batch payments, there are not negative invoices and positive invoices
         dtype = invoices[0].type
         for inv in invoices[1:]:
@@ -749,7 +749,7 @@ class payment_register(models.TransientModel):
 
         # Check all invoices are open
         if any(invoice.state != 'posted' or invoice.invoice_payment_state != 'not_paid' or not invoice.is_invoice() for invoice in invoices):
-            raise UserError(_("You can only register payments for open invoices"))
+            raise UserError(_("You can only register payments for posted moves."))
         # Check all invoices are inbound or all invoices are outbound
         outbound_list = [invoice.is_outbound() for invoice in invoices]
         first_outbound = invoices[0].is_outbound()
